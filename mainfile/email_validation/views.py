@@ -27,7 +27,7 @@ def login(request):
 
 
 def profile(request):
-    print(request.user)  
+    # print(request.user)  
     return render(request, 'profile.html')
 
 
