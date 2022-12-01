@@ -48,32 +48,37 @@ def otp(request, id):
             messages.info(request, 'fill correclty')
             return render(request, 'otp.html', {'id':id})
         else:
+            for userdata in user:
+                    if userdata.otp == otp:               
+                        return redirect('password_change', id) 
+            return render(request, 'otp.html', {'id':id})
+    return render(request, 'otp.html', {'id':id})
             # time_verification = Otp.objects.get(id=id)
             # print(time_verification)
-            user = User.objects.filter(id=id).get()
-            email = user.email
-            time_verification = Otp.objects.get(email=email)
-            str_value_time = time_verification.time
-            list_existing_time = str(str_value_time).split(" ")
-            list_existing_time1 = list_existing_time[1].split(":")
-            for time in list_existing_time1[2:3]:
-                value = time.split(".")[0:1]
-                value1 = value[0]
-                list_existing_time1.insert(2,value1)
-            # print(list_existing_time)
-            evaulate_list = [value for value in list_existing_time1[:3]]
-            print(evaulate_list)           
-            str_value_time_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S').split(" ")
-            str_value_time_now1 = str_value_time_now[1].split(":")
-            print(str_value_time_now1)
-            if list_existing_time[0] != str_value_time_now[0]:
-                print("phase-1")
-                return render(request, 'otp.html', {'id':id})
-            if evaulate_list[0] != str_value_time_now1[0]:
-                print("phase-2")
-                return render(request, 'otp.html', {'id':id})
-            elif (evaulate_list[1] != str_value_time_now1[1]) or (evaulate_list[1] == str_value_time_now1[1]):
-                print("hello")
+            # user = User.objects.filter(id=id).get()
+            # email = user.email
+            # time_verification = Otp.objects.get(email=email)
+            # str_value_time = time_verification.time
+            # list_existing_time = str(str_value_time).split(" ")
+            # list_existing_time1 = list_existing_time[1].split(":")
+            # for time in list_existing_time1[2:3]:
+            #     value = time.split(".")[0:1]
+            #     value1 = value[0]
+            #     list_existing_time1.insert(2,value1)
+            # # print(list_existing_time)
+            # evaulate_list = [value for value in list_existing_time1[:3]]
+            # print(evaulate_list)           
+            # str_value_time_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S').split(" ")
+            # str_value_time_now1 = str_value_time_now[1].split(":")
+            # print(str_value_time_now1)
+            # if list_existing_time[0] != str_value_time_now[0]:
+            #     print("phase-1")
+            #     return render(request, 'otp.html', {'id':id})
+            # if evaulate_list[0] != str_value_time_now1[0]:
+            #     print("phase-2")
+            #     return render(request, 'otp.html', {'id':id})
+            # elif (evaulate_list[1] != str_value_time_now1[1]) or (evaulate_list[1] == str_value_time_now1[1]):
+            #     print("hello")
                 # user = User.objects.filter(id=id).get()
                 # email = user.email
                 # time = Otp.objects.get(email=email)
@@ -98,11 +103,11 @@ def otp(request, id):
             #     return render(request, 'otp.html', {'id':id})
 
             
-            else:
-                for userdata in user:
-                    if userdata.otp == otp:               
-                        return redirect('password_change', id)                         
-    return render(request, 'otp.html', {'id':id})
+            # else:
+                # for userdata in user:
+                #     if userdata.otp == otp:               
+                #         return redirect('password_change', id)                         
+    # return render(request, 'otp.html', {'id':id})
 
 
 def password_change(request, id):   
@@ -125,17 +130,18 @@ def password_change(request, id):
             return redirect('/login/')            
     return render(request, 'password_change.html', {'id':id})
 
-# def timer_limit(request, email, otp, id):
-#     send_forget_password_mail(email, otp, id)
-
-#     user_temporary = Otp.objects.get(email=email)
-#     user_temporary.otp = None
-#     user_temporary.save()
-#     return True
-
+def delete_after_one_minutes():
+    global email
+    time.sleep(20)
+    user_temporary = Otp.objects.get(email=email)
+    user_temporary.otp = None
+    user_temporary.save()
+    return True
+            
 
 def password_reset(request):
     if request.method == "POST":
+        global email
         email = request.POST.get('email')        
         if not User.objects.filter(email=email):       
             messages.warning(request, 'Your account is not exists !!!')     
@@ -151,18 +157,11 @@ def password_reset(request):
             if user1.email == user_temporary.email:
                 otpsave = Otp.objects.get(email=email)  #for existing user
                 otpsave.otp = otp
-                otpsave.save()
-                # timer = timer_limit(request, email, otp, user1.id)
-                
+                otpsave.save()                
                 send_forget_password_mail(email, otp, user1.id)
-
-                # time_schedular = BackgroundScheduler()
-                # time_schedular.add_job(password_change, 'interval', seconds=15)
-                # time_schedular.start()
-
-                # user_temporary = Otp.objects.get(email=email)
-                # user_temporary.otp = None
-                # user_temporary.save()
+                scheduler = BackgroundScheduler()
+                scheduler.add_job(delete_after_one_minutes, 'interval', seconds=20)
+                scheduler.start()
                 return render(request, 'password_reset.html')                
 
             else:

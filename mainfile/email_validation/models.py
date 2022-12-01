@@ -12,14 +12,5 @@ class Otp(models.Model):
     otp = models.CharField(max_length=10, null=True)
     time = models.DateTimeField(auto_now_add=True, null=True)
 
-    # @property
-    # def delete_after_one_minutes(self):
-    #     time = self.time + datetime.timedelta(minutes=1)    
-    #     if time > datetime.datetime.now():
-    #         e = Otp.objects.get(email=self.email)
-    #         e.delete()
-    #         return True
-    #     else:
-    #         return False
     
 
