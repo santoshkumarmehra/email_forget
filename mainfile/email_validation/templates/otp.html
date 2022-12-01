@@ -1,0 +1,35 @@
+{% extends 'core.html' %}
+
+{% block contitle %}
+    OTP Verification
+{% endblock contitle %}
+
+{% block content %}
+{% if messages %}
+<ul class="messages alert alert-danger">
+  {% for message in messages %}
+  <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+      {{ message }}
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+<form action="{% url 'otp' id %}" class="mx-1 mx-md-4" method="POST">
+    {% csrf_token %}
+    <!-- input field for otp -->
+    <div class="d-flex flex-row align-items-center mb-4">
+        <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
+        <div class="form-outline flex-fill mb-0">
+            <label class="form-label" for="form3Example3c">OTP</label>
+            <input name="otp" type="text" id="form3Example3c"
+            class="form-control" />  
+        </div>
+    </div>
+   <!-- submit button -->
+    <div>
+        <input type="submit" value="Verify" class="btn btn-primary btn-lg m-4">   
+    </div>
+</form>    
+
+
+{% endblock content %}

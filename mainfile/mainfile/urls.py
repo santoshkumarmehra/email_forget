@@ -20,12 +20,13 @@ from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('', views.signup, name="signup"),
     path('signup/', views.signup, name="signup"),
     path('login/', views.login, name="login"),
     path('profile/', views.profile, name="profile"),
     path('password_reset/', views.password_reset, name="password_reset"),
     path('password_change/<id>/', views.password_change, name="password_change"),
+    path('<int:id>/', views.otp, name="otp"),
+    path('admin/', admin.site.urls),
 
 ]

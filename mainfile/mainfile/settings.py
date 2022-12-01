@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'email_validation',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
