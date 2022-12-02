@@ -14,7 +14,7 @@
   {% endfor %}
 </ul>
 {% endif %}
-<form action="{% url 'otp' id %}" class="mx-1 mx-md-4" method="POST">
+<form action="{% url 'otp' id %}" class="mx-1 mx-md-4" method="POST" >
     {% csrf_token %}
     <!-- input field for otp -->
     <div class="d-flex flex-row align-items-center mb-4">
@@ -25,11 +25,29 @@
             class="form-control" />  
         </div>
     </div>
+    
    <!-- submit button -->
     <div>
-        <input type="submit" value="Verify" class="btn btn-primary btn-lg m-4">   
+        <input type="submit" value="Verify otp" class="btn btn-primary btn-sm m-4 btn-hhh " >  
+    
+        {% if forget_otp %}
+            <a href="/password_reset" class="btn btn-primary btn-sm m-4 ms-4 "  >
+                Resend otp
+            </a>
+        {% endif %}
+        
     </div>
+    
 </form>    
+
+
+<script>
+
+    
+
+    // var myCountdown1 = new Countdown({time:316});
+    // $('div a').countdown({until: liftoffTime});
+</script>
 
 
 {% endblock content %}
