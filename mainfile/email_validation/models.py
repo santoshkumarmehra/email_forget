@@ -11,6 +11,7 @@ class Otp(models.Model):
     email = models.EmailField(max_length=100, null=True)
     otp = models.CharField(max_length=10, null=True)
     time = models.DateTimeField(auto_now_add=True, null=True)
+    otp_time = models.IntegerField(null=True)
 
     
 

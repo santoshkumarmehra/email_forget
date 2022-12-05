@@ -1,6 +1,7 @@
 {% extends 'core.html' %}
 
 {% block contitle %}
+<!-- {{t1}}<br> -->
     OTP Verification
 {% endblock contitle %}
 
@@ -10,8 +11,8 @@
   {% for message in messages %}
   <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
       {{ message }}
-  </li>
-  {% endfor %}
+    </li>
+    {% endfor %}
 </ul>
 {% endif %}
 <form action="{% url 'otp' id %}" class="mx-1 mx-md-4" method="POST" >
@@ -28,25 +29,149 @@
     
    <!-- submit button -->
     <div>
+        
+        
         <input type="submit" value="Verify otp" class="btn btn-primary btn-sm m-4 btn-hhh " >  
-    
-        {% if forget_otp %}
-            <a href="/password_reset" class="btn btn-primary btn-sm m-4 ms-4 "  >
+        
+        <span id="timer1">Time Left 00:</span><span type="text" id="timer" >
+            
+        </span>
+        <!-- <button id="reset">Reset</button> -->
+        <span > 
+            
+            <a id="reset" href="/password_reset" class="btn btn-primary btn-sm m-4 ms-4 ">
                 Resend otp
             </a>
-        {% endif %}
-        
+<!-- 
+            <a id="reset" href="/password_reset" class="btn btn-primary btn-sm m-4 ms-4 ">
+                Resend otp
+            </a> -->
+        </span>
+
     </div>
     
 </form>    
 
 
-<script>
+<script >
+
+function Countdown()
+{
+    this.start_time = "00:25";
+    this.target_id = "#timer";
+    this.name = "timer";
+    this.reset_btn = "#reset";
+}
+
+Countdown.prototype.init = function()
+{
+this.reset();
+setInterval(this.name + '.tick()',1000)
+}
+
+Countdown.prototype.reset = function()
+{
+    $(this.reset_btn).hide();
+    time = this.start_time.split(":");
+    //this.minutes = parseInt(time[0]);
+    this.seconds = parseInt(time[1]);
+    this.update_target();
+}
+
+// change
+
+// change
+
+Countdown.prototype.tick = function()
+{
+    if(this.seconds > 0) //|| this.minutes > 0)
+    {
+        if(this.seconds == 0)
+        {
+           // this.minutes = this.minutes - 1;
+        //    document.getElementById('timer').style.display = "none";
+            this.seconds = 59            
+            
+        } else {
+        this.seconds = document.getElementById('timer').innerHTML = `${(this.seconds - 1) < 10 ? '0' : ''}${this.seconds - 1}`;
+        if(this.seconds == 0){
+            document.getElementById('timer').style.display = "none";
+            document.getElementById('timer1').style.display = "none";
+        }
+        }
+    }
+    this.update_target()
+}
+
+Countdown.prototype.update_target = function()
+{
+    seconds = this.seconds;
+    if (seconds == 0) $(this.reset_btn).show();
+    else if(seconds < 10) seconds = "0" + seconds;
+    $(this.target_id).val(this.seconds)
+}
+
+timer = new Countdown();
+timer.init();
+
+$(document).ready(function(){
+    $("#reset").click(function(){
+        //timer = new Countdown();  
+        timer.reset();        
+    });
+});
+
+// change 
+
+
+
+
+
+    // var counter =3;
+
+    // setInterval(function(){
+    //     counter--;
+    //     if (counter >= 0){
+    //         id = document.getElementById("timer").innerHTML = counter;
+    //     }
+
+    //     if (counter == 0 ){         
+    //         // document.getElementById('timer').innerHTML = "Resend Button";
+    //         clearInterval(counter);
+    //         // $("#resendbtn").prop('disabled',true);
+    //     }
+    // }, 1000);
 
     
 
-    // var myCountdown1 = new Countdown({time:316});
-    // $('div a').countdown({until: liftoffTime});
+
+
+
+
+
+
+    // const timeh = document.getElementById('timer');
+    // let timesecond = 10;
+    // displaytime(timesecond)
+
+    // const countdown = setInterval(()=>{
+    //     timesecond--;
+    //     displaytime(timesecond);
+    //     if (timesecond <=0 || timesecond < 1){
+    //         endtime();
+    //         clearInterval(countdown);
+    //     }
+    // }, 1000)
+    // function displaytime(second){
+    //     const min = math.floor(second / 60);
+    //     const sec = math.floor(second % 60);
+    //     timeh.innerHTML = '${min}:${sec}'
+    // }
+    // function endtime(){
+    //     timeh.innerHTML = 'timeout'
+    // }
+    
+
 </script>
 
 

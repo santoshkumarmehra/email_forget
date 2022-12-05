@@ -35,19 +35,24 @@ def profile(request):
 
 
 def otp(request, id):    
+    # otp_user = User.objects.get(id=id)
+    # user_email = otp_user.email
+    # otp_time = Otp.objects.get(email=user_email)
+    # old_otp_time = otp_time.otp_time
+    # new_otp_time = time.time()
+    # total_time = new_otp_time - old_otp_time    
     if request.method == "POST":
         otp = request.POST.get('otp')
-        forget_otp = 1
         if not otp.isdigit():
             messages.info(request, 'fill correclty')
-            return render(request, 'otp.html', {'id':id, 'forget_otp':forget_otp})
+            return render(request, 'otp.html', {'id':id})
         elif len(otp)<4 or len(otp)>4:
             messages.info(request, 'fill correclty')
-            return render(request, 'otp.html', {'id':id, 'forget_otp':forget_otp})
+            return render(request, 'otp.html', {'id':id})
         user = Otp.objects.filter(otp=otp)        
         if not user:
             messages.info(request, 'fill correclty')
-            return render(request, 'otp.html', {'id':id, 'forget_otp':forget_otp})
+            return render(request, 'otp.html', {'id':id})
         else:
             for userdata in user:
                     if userdata.otp == otp:               
@@ -79,7 +84,7 @@ def password_change(request, id):
 
 def delete_after_one_minutes():
     global email
-    time.sleep(60)
+    time.sleep(24)
     user_temporary = Otp.objects.get(email=email)
     user_temporary.otp = None
     user_temporary.save()
@@ -87,7 +92,9 @@ def delete_after_one_minutes():
             
 
 def password_reset(request):
+    global otpgenerationtime
     if request.method == "POST":
+        #otpinsertiontime
         global email
         email = request.POST.get('email')        
         if not User.objects.filter(email=email):       
@@ -100,23 +107,24 @@ def password_reset(request):
                 otp += str(otpnumber)
             user1 = User.objects.get(email=email)
             user_temporary = Otp.objects.filter(email=user1.email)
-            print(user_temporary)
+            otp_time = time.time()
             if not user_temporary:               
-                Otp(email=user1.email, otp=otp, time=datetime.now().strftime('%Y:%b:%d %H:%M:%S')).save() 
+                Otp(email=user1.email, otp=otp, time=datetime.now().strftime('%Y:%b:%d %H:%M:%S'), otp_time=otp_time).save() 
                 user_temporary = Otp.objects.filter(email=user1.email).get()
                 send_forget_password_mail(user_temporary.email, user_temporary.otp, user1.id)
                 scheduler = BackgroundScheduler()
-                scheduler.add_job(delete_after_one_minutes, 'interval', seconds=20)
+                scheduler.add_job(delete_after_one_minutes, 'interval', seconds=24)
                 scheduler.start()
                 return render(request, 'password_reset.html')
             else:
                 user_temporary = Otp.objects.get(email=email)
                 user_temporary.otp = otp
+                user_temporary.otp_time = otp_time  
                 user_temporary.save()                
                 send_forget_password_mail(user_temporary.email, user_temporary.otp, user1.id)
                 scheduler = BackgroundScheduler()
                 scheduler.add_job(delete_after_one_minutes, 'interval', seconds=20)
-                scheduler.start()
+                scheduler.start()              
                 return render(request, 'password_reset.html')                
     return render(request, 'password_reset.html')
 
